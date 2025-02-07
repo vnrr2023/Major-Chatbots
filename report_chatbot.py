@@ -21,7 +21,7 @@ COLLECTION = DB["report_data"]
 redis_client = redis.StrictRedis(host=os.environ["REDIS_HOST"],port=int(os.environ["REDIS_PORT"]),password=os.environ["REDIS_PASS"],decode_responses=True)
 
 nlp=spacy.load("en_core_web_lg")
-chatbot_model=pickle.load(open("chatbot.pkl","rb"))
+chatbot_model=pickle.load(open("models/chatbot.pkl","rb"))
 intent_map={0: 'welcome', 1: 'thank_you', 2: 'bye', 3: 'help', 4: 'about'}
 
 def createUserData(user_id:str):
