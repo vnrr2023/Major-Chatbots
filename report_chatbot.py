@@ -4,7 +4,7 @@ from pymongo.server_api import ServerApi
 import pickle
 import spacy
 import os
-from medical_chatbot import queryLLM,queryReportChatbotLLM
+from medical_chatbot import queryReportChatbotLLM
 MONGO_USER=os.environ["MONGO_USER"]
 MONGO_PASS=os.environ["MONGO_PASS"]
 uri = f"mongodb+srv://{MONGO_USER}:{MONGO_PASS}@cluster0.lxnui.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -43,7 +43,6 @@ def predictIntent(question):
 
 def queryReportChatbot(key,question):
     data=redis_client.get(key)
-    if not data:
-        pass
+    if not data:pass
     return queryReportChatbotLLM(data,question)
 
