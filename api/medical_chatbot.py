@@ -1,6 +1,6 @@
 import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings,ChatGoogleGenerativeAI,HarmBlockThreshold, HarmCategory
-from langchain_chroma import Chroma
+from langchain_pinecone import PineconeVectorStore
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
@@ -18,7 +18,7 @@ llm=ChatGoogleGenerativeAI(model="gemini-2.0-flash",temperature=0,api_key=os.env
 gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001",google_api_key=os.environ["GOOGLE_API_KEY"])
 persist_directory = "chatbot_db"
 collection_name="medical_data"
-vector_store=Chroma(persist_directory=persist_directory,collection_name=collection_name, embedding_function=gemini_embeddings)
+vector_store=PineconeVectorStore(index_name= "arogya-bot-index", embedding=gemini_embeddings)
 retriever = vector_store.as_retriever()
 
 contextualize_q_system_prompt = (
@@ -70,12 +70,10 @@ def queryMedicalChatBotLLM(question,user_id):
 def queryReportChatbotLLM(data,question):
     messages = [
         ("system",f"""
-        You are task is to answer questions based on the context only.Give me the reponse in json format only with two keys
-        "ans": the answer in short about 60 to 70 words based on the context only. paraphrase the question while answering
-        "status": value should be "true" if the answer is found in the context else will be "false".
-        give me the response in json format with no preamble and no nested json and only text.
-        Respond with a single-line JSON object without any extra formatting, indentation, or backticks.
-        Dont give ```json\\n at start also
+        Your task is to answer questions based on the context only.Give me the answer in short about 60 to 70 words based on the context only. paraphrase the question while answering.
+        If the user greets then greet the user. if the user ackowledges your answer then reply to it too.
+        If the question asked is not relevant to the context  or not present in the context just say: Ooops! I dont have enough data to answer this question.
+        Give me the answer without any preamble and without any extra text.
          Context: {data}
         """),
         ("human",question)
