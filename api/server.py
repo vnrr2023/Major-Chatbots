@@ -22,15 +22,15 @@ app.add_middleware(
 
 @app.post("/query")
 async def answer_query(request:Request):        
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return JSONResponse({"mssg":"No token provided"},status_code=401)
-    token = auth_header.split(" ")[1]
-    user_id=validateToken(token)
-    if user_id==None: return JSONResponse({"mssg":"Session expired..Login again"},status_code=401)
+    # auth_header = request.headers.get("Authorization")
+    # if not auth_header or not auth_header.startswith("Bearer "):
+    #     return JSONResponse({"mssg":"No token provided"},status_code=401)
+    # token = auth_header.split(" ")[1]
+    # user_id=validateToken(token)
+    # if user_id==None: return JSONResponse({"mssg":"Session expired..Login again"},status_code=401)
     data=await request.json()
     question=data["question"]
-    response=queryMedicalChatBotLLM(question,user_id)
+    response=queryMedicalChatBotLLM(question,"1")
     return JSONResponse({"response":response},status_code=200)
 
 @app.get("/test")
@@ -56,9 +56,9 @@ async def chat(request:Request):
     return JSONResponse({"resp":None,"mssg":"Agent Expired"},status_code=400)
 
 
-# if __name__=="__main__":
-#     print("Server Running on port 6000")
-#     uvicorn.run("server:app",host="127.0.0.1",port=8000,reload=True)
+if __name__=="__main__":
+    print("Server Running on port 6000")
+    uvicorn.run("server:app",host="127.0.0.1",port=8000,reload=True)
 
 # from mangum import Mangum
 # handler = Mangum(app)
